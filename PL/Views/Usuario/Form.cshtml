@@ -1,0 +1,639 @@
+﻿@model ML.Usuario
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2>Formulario Usuario</h2>
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("Form", "Usuario", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="form-horizontal">
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.IdUsuario, new { @class = "visually-hidden" })
+
+                        @Html.TextBoxFor(model => model.IdUsuario, new { @class = "visually-hidden form-control"})
+
+                        @Html.ValidationMessageFor(model => model.IdUsuario)
+
+                    </div>
+
+
+                    <div class="row">
+
+
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.Nombre)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+
+                                @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control" , @placeholder = "Ejemplo:Javier", autocomplete = "off", @onkeypress="return SoloLetras(event, 'lblNombre')"})
+
+                                @Html.ValidationMessageFor(model => model.Nombre)
+                                @Html.Label("",null,new{@id="lblNombre"})
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.ApellidoPaterno)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+
+                                @Html.TextBoxFor(model => model.ApellidoPaterno, new { @class = "form-control" , @placeholder = "Ejemplo:Aviles", autocomplete = "off", @onkeypress="return SoloLetras(event, 'lblApellidoPaterno')"})
+
+                                @Html.ValidationMessageFor(model => model.ApellidoPaterno)
+                                @Html.Label("",null,new{@id="lblApellidoPaterno"})
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.ApellidoMaterno)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+
+                                @Html.TextBoxFor(model => model.ApellidoMaterno, new { @class = "form-control" , @placeholder = "Ejemplo:Coria", autocomplete = "off", @onkeypress="return SoloLetras(event, 'lblApellidoMaterno')"})
+
+                                @Html.ValidationMessageFor(model => model.ApellidoMaterno)
+
+                                @Html.Label("",null,new{@id="lblApellidoMaterno"})
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.FechaDeNacimiento)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-calendar2-date"></i></span>
+
+                                @Html.TextBoxFor(model => model.FechaDeNacimiento, new { @class = "form-control" , @placeholder = "Ejemplo: 02-11-1999", @id="IdFechaDeNacimiento" , autocomplete = "off"})
+
+                                @Html.ValidationMessageFor(model => model.FechaDeNacimiento)
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Sexo)
+                            <br>
+                            Hombre = @Html.RadioButtonFor(model=>model.Sexo,"H")
+                            <br>
+                            Mujer = @Html.RadioButtonFor(model=>model.Sexo,"M")
+
+                            @Html.ValidationMessageFor(model => model.Sexo)
+
+                        </div>
+                    </div>
+
+
+
+
+                    <hr></hr>
+                    <div class="divider py-1 bg-success"></div>
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.UserName)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-people"></i></span>
+
+                                @Html.TextBoxFor(model => model.UserName, new { @class = "form-control" , autocomplete = "off", @placeholder = "Ejemplo:Jac999"})
+
+                                @Html.ValidationMessageFor(model => model.UserName)
+
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Email)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-envelope-at-fill"></i></span>
+
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", autocomplete = "off", @placeholder = "Ejemplo: aviles.javier025@gmail.com" , @id="txtEmail"})
+
+                                @Html.ValidationMessageFor(model => model.Email)
+                                @Html.Label("",null,new{@id="lblEmail"})
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Email, "Verificar correo")
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-envelope-at-fill"></i></span>
+
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", autocomplete = "off" , @placeholder = "Ejemplo: aviles.javier025@gmail.com" , @id ="txtValidarEmail"})
+
+                                @Html.ValidationMessageFor(model => model.Email)
+                                @Html.Label("",null,new{@id="lblEmailValidar"})
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Password)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+
+                                @Html.TextBoxFor(model => model.Password, new { @class = "form-control" , autocomplete = "off" , @type = "password", @id="txtPassword"})
+
+                                @Html.ValidationMessageFor(model => model.Password)
+                                @Html.Label("",null,new{@id="lblPassword"})
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Password, "Validar Password")
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+
+                                @Html.TextBoxFor(model => model.Password, new { @class = "form-control", autocomplete = "off"  , @type = "password" , @id="txtValidarPassword"})
+
+                                @Html.ValidationMessageFor(model => model.Password)
+                                @Html.Label("",null,new{@id="lblValidarPassword"})
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Telefono)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+
+                                @Html.TextBoxFor(model => model.Telefono, new { @class = "form-control", @placeholder = "Ejemplo: 586198753",@id="txtTelefono", autocomplete = "off", @onkeypress="return SoloNumeros(event, 'lblTelefono')" })
+
+                                @Html.ValidationMessageFor(model => model.Telefono)
+                                @Html.Label("",null,new{@id="lblTelefono"})
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Celular)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-phone-fill"></i></span>
+
+                                @Html.TextBoxFor(model => model.Celular, new { @class = "form-control"  , @placeholder = "Ejemplo: 55555555555" ,@id="txtCelular", autocomplete = "off", @onkeypress="return SoloNumeros(event, 'lblCelular')"})
+
+                                @Html.ValidationMessageFor(model => model.Celular)
+                                @Html.Label("",null,new{@id="lblCelular"})
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.CURP)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-fingerprint"></i></span>
+
+                                @Html.TextBoxFor(model => model.CURP, new { @class = "form-control" , @placeholder = "Ejemplo: GOVM860812MJCNLR05",@id="txtCURP", autocomplete = "off", @onkeyup="return cUrP(event, 'lblCURP')" })
+
+                                @Html.ValidationMessageFor(model => model.CURP)
+                                @Html.Label("",null,new{@id="lblCURP"})
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+
+                            @Html.LabelFor(model => model.Rol.IdRol)
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-person-rolodex"></i></span>
+
+                                @Html.DropDownListFor(model => model.Rol.IdRol, new SelectList(Model.Rol.NombreRol, "IdRol","Nombre"),"Selecciona una opcion", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Rol.IdRol)
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr></hr>
+                <div class="divider py-1 bg-success"></div>
+
+
+                <div class=" offset-md-12">
+
+                    @Html.LabelFor(model=> model.Imagen)
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-image"></i></span>
+                        <input id="IFImage" type='file' class="form-control" name="IFImage" onchange="validateFile(this), readURL(this);  " />
+                    </div>
+
+                    @if (Model.Imagen != null)
+                    {
+
+                        <img id="Img" src="data:image/*;base64,@Model.Imagen" style="width:250px ; height:250px" />
+
+                    }
+                    else
+                    {
+                        <img id="Img" src="~/SinFoto.png" style="width:250px ; height:250px" />
+                    }
+
+                </div>
+                @Html.HiddenFor(model => model.Imagen)
+
+
+
+
+
+
+
+                <hr></hr>
+                <div class="divider py-1 bg-success"></div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.Direccion.Colonia.Municipio.Estado.Pais.IdPais)
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+
+                            @Html.DropDownListFor(model => model.Direccion.Colonia.Municipio.Estado.Pais.IdPais, new SelectList(Model.Direccion.Colonia.Municipio.Estado.Pais.Paises, "IdPais", "Nombre"), "Selecciona una opción", new { id = "ddlPais", @class = "form-control" })
+
+                            @Html.ValidationMessageFor(model => model.Direccion.Colonia.Municipio.Estado.Pais.IdPais)
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-3">
+
+
+
+                        @Html.LabelFor(model => model.Direccion.Colonia.Municipio.Estado.IdEstado)
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            @if (Model.Direccion.Colonia.Municipio.Estado.Estados == null)
+                            {
+                                @Html.DropDownListFor(model => model.Direccion.Colonia.Municipio.Estado.IdEstado, new SelectList(string.Empty, "Value", "Text"), "Seleciona un Estado", htmlAttributes: new { id = "ddlEstado", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Direccion.Colonia.Municipio.Estado.IdEstado)
+                            }
+
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.Direccion.Colonia.Municipio.Estado.IdEstado, new SelectList(Model.Direccion.Colonia.Municipio.Estado.Estados, "IdEstado", "Nombre"), "Seleciona un Estado", htmlAttributes: new { id = "ddlEstado", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Direccion.Colonia.Municipio.Estado.IdEstado)
+                            }
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+
+
+
+                        @Html.LabelFor(model => model.Direccion.Colonia.Municipio.IdMunicipio)
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            @if (Model.Direccion.Colonia.Municipio.Municipios == null)
+                            {
+                                @Html.DropDownListFor(model => model.Direccion.Colonia.Municipio.IdMunicipio, new SelectList(string.Empty, "Value", "Text"), "Seleciona un Municipio", htmlAttributes: new { id = "ddlMunicipio", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Direccion.Colonia.Municipio.IdMunicipio)
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.Direccion.Colonia.Municipio.IdMunicipio, new SelectList(Model.Direccion.Colonia.Municipio.Municipios, "IdMunicipio", "Nombre"), "Seleciona un Municipio", htmlAttributes: new { id = "ddlMunicipio", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Direccion.Colonia.Municipio.IdMunicipio)
+                            }
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="g-grid mt-8 gap-2 col-3 mx-auto">
+
+
+
+
+                        @Html.LabelFor(model => model.Direccion.Colonia.IdColonia)
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            @if (Model.Direccion.Colonia.Colonias == null)
+                            {
+                                @Html.DropDownListFor(model => model.Direccion.Colonia.IdColonia, new SelectList(string.Empty, "Value", "Text"), "Seleciona una Colonia", htmlAttributes: new { id = "ddlColonia", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Direccion.Colonia.IdColonia)
+                            }
+
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.Direccion.Colonia.IdColonia, new SelectList(Model.Direccion.Colonia.Colonias, "IdColonia", "Nombre"), "Seleciona una Colonia", htmlAttributes: new { id = "ddlColonia", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Direccion.Colonia.IdColonia)
+                            }
+
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Direccion.IdDireccion, new { @class ="visually-hidden" })
+
+                        @Html.TextBoxFor(model => model.Direccion.IdDireccion, new { @class = "visually-hidden form-control" })
+
+                        @Html.ValidationMessageFor(model => model.Direccion.IdDireccion)
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Direccion.Calle)
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+
+                            @Html.TextBoxFor(model => model.Direccion.Calle, new { @class = "form-control", @placeholder = "Ejemplo: Av.Snta Rosa" , autocomplete = "off", @id="txtCalle", @onkeypress = "return SoloLetras(event,'lblCalle')"})
+
+                            @Html.ValidationMessageFor(model => model.Direccion.Calle)
+                            @Html.Label("",null, new {@id="lblCalle"})
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Direccion.NumeroInterior)
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-1-circle"></i></span>
+
+                            @Html.TextBoxFor(model => model.Direccion.NumeroInterior, new { @class = "form-control" , @placeholder = "Ejemplo: 5", autocomplete = "off", @id="txtNumeroInterior", @onkeypress = "return SoloNumeros(event,'lblNumeroInterior')"})
+
+                            @Html.ValidationMessageFor(model => model.Direccion.NumeroInterior)
+                            @Html.Label("",null, new {@id="lblNumeroInterior"})
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Direccion.NumeroExterior)
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-1-circle"></i></span>
+
+                            @Html.TextBoxFor(model => model.Direccion.NumeroExterior, new { @class = "form-control" , @placeholder = "Ejemplo: 60", autocomplete = "off", @id="txtNumeroExterior", @onkeypress = "return SoloNumeros(event,'lblNumeroExterior')"})
+
+                            @Html.ValidationMessageFor(model => model.Direccion.NumeroExterior)
+                            @Html.Label("",null, new {@id="lblNumeroExterior"})
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row g-3 ">
+                    <div class="col-md-3">
+
+                        <input type="submit" value="Guardar" class="btn btn-success" />
+
+                    </div>
+                    <div class="col-md-3">
+                        @Html.ActionLink("Regresar", "GetAll", "Usuario", htmlAttributes: new { @class = "btn btn-danger" })
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#ddlPais").change(function () {
+                $("#ddlEstado").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetEstado")',
+                    dataType: 'json',
+                    data: { IdPais: $("#ddlPais").val() },
+                    success: function (estados) {
+                        $("#ddlEstado").append('<option value="0">' + 'Seleccione una opción' + '</option>');
+                        $.each(estados, function (i, estados) {
+                            $("#ddlEstado").append('<option value="'
+                                + estados.idEstado + '">'
+                                + estados.nombre + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+                });
+            })
+        })
+
+
+        $(document).ready(function () {
+            $("#ddlEstado").change(function () {
+                $("#ddlMunicipio").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetMunicipio")',
+                    dataType: 'json',
+                    data: { IdEstado: $("#ddlEstado").val() },
+                    success: function (municipios) {
+                        $("#ddlMunicipio").append('<option value="0">' + 'Seleccione una opción' + '</option>');
+                        $.each(municipios, function (i, municipios) {
+                            $("#ddlMunicipio").append('<option value="'
+                                + municipios.idMunicipio + '">'
+                                + municipios.nombre + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+                });
+            })
+        })
+
+        $(document).ready(function () {
+            $("#ddlMunicipio").change(function () {
+                $("#ddlColonia").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetColonia")',
+                    dataType: 'json',
+                    data: { IdMunicipio: $("#ddlMunicipio").val() },
+                    success: function (colonias) {
+                        $("#ddlColonia").append('<option value="0">' + 'Seleccione una opción' + '</option>');
+                        $.each(colonias, function (i, colonias) {
+                            $("#ddlColonia").append('<option value="'
+                                + colonias.idColonia + '">'
+                                + colonias.nombre + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+                });
+            })
+        })
+        //Calendario
+        $(function () {
+            $("#IdFechaDeNacimiento").datepicker({
+
+                dateFormat: 'dd-mm-yy',
+                yearRange: '-50:+0',
+                changeMonth: true,
+                changeYear: true
+
+
+            });
+        });
+        //funcion mostrar solo Numeros en campos de texto
+        function SoloNumeros(e, controlId) {
+            var caracter = e.key;
+            if (!/^[0-9]/g.test(caracter)) {
+                $('#' + controlId).text("   Solo se aceptan numeros");
+                $('#' + controlId).css({ "color": "red" });
+                return false;
+            }
+            else {
+                $('#' + controlId).text("");
+                return true;
+            }
+        }
+        //funcion mostrar solo Letras en campos de texto
+        function SoloLetras(e, controlId) {
+            var caracter = e.key;
+            if (!/^[a-zA-Z ]+$/g.test(caracter)) {
+                $('#' + controlId).text("   Solo se aceptan letras");
+                $('#' + controlId).css({ "color": "red" });
+                return false;
+            }
+            else {
+                $('#' + controlId).text("");
+                return true;
+            }
+        }
+
+        //funcion validar coincidencia de texto email y validación de escritura
+        function correoElectronico(e, controlId) {
+            var caracter = e.key;
+            var regex = /^[a-zA-Z0-9._]+[a-zA-Z0-9]+@@[a-zA-Z0-9]+\.[a-zA-Z]{2,4}$/;
+            if (regex.test(caracter)) {
+
+                $('#email' + controlId).css({ "color": "green" });
+                $('#' + controlId).text("");
+                return true;
+            }
+            else {
+                $('#' + controlId).css({ "color": "red" });
+                return false;
+            }
+        }
+        $('#txtEmail, #txtValidarEmail').on('blur keyup', function () {
+            var regex = /^[a-zA-Z0-9._]+[a-zA-Z0-9]+@@[a-zA-Z0-9]+\.[a-zA-Z]{2,4}$/;
+            var resultado = $('#txtValidarEmail').val();
+
+            if (regex.test(this.value) && $('#txtEmail').val() == $('#txtValidarEmail').val()) {
+                $('#lblEmail').html('');
+                $('#lblEmailValidar').html('Correos no coinciden').attr('class', 'text-success');
+
+            }
+            else if (regex.test(this.value)) {
+                $('#lblEmail').html('');
+                $('#lblEmailValidar').html('Correos no coinciden').attr('class', 'text-danger');
+            }
+            else if (regex.test($('#txtEmail').val()) && !regex.test(resultado)) {
+                $('#lblEmail').html('');
+                $('#lblEmailValidar').html('Correo invalido').attr('class', 'text-danger');
+            }
+            else {
+                $('#lblEmail').html('Correo invalido');
+                $('#lblEmailValidar').html('Correos no coinciden').attr('class', 'text-danger');
+            }
+
+        });
+
+        //Función para validar CURP
+        function cUrP(e, controlId) {
+            var expRegCurp = /^[A-Z][AEIOUX][A-Z]{2}[0-9]{2}[0-1][0-9][0-3][0-9][MH][A-Z][BCDFGHJKLMNÑPQRSTVWXYZ]{4}[0-9A-Z][0-9]\z$/;
+
+            var esValido = expRegCurp.test($('#txtCURP'));
+            let curp = $('#txtCURP').val().trim();
+            if (curp.length == 18 || esValido) {
+                $('#lblCURP' + controlId).css({ "color": "green" });
+                $('#lblCURP').html('CURP valido').attr('class', 'text-success');
+                
+            } else {
+                $('#lblCURP').html('');
+                $('#lblCURP').html('CURP invalido').attr('class', 'text-danger');               
+            }              
+        }
+
+
+        //Validacion de password
+        $('#txtPassword, #txtValidarPassword').on('blur keyup', function () {
+            var regex = /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{10,16}$/;
+            var resultado = $('#txtValidarPassword').val();
+
+            if (regex.test(this.value) && $('#txtPassword').val() == $('#txtValidarPassword').val()) {
+                $('#lblPassword').html('');
+                $('#lblValidarPassword').html('Contrasenas no coinciden').attr('class', 'text-success');
+
+            }
+            else if (regex.test(this.value)) {
+                $('#lblPassword').html('');
+                $('#lblValidarPassword').html('Contrasenas no coinciden').attr('class', 'text-danger');
+            }
+            else if (regex.test($('#txtPassword').val()) && !regex.test(resultado)) {
+                $('#lblPassword').html('');
+                $('#lblValidarPassword').html('Contrasena invalido').attr('class', 'text-danger');
+            }
+            else {
+                $('#lblPassword').html('Contrasena invalida, no cumples con los requisitos minimos ');
+                $('#lblValidarPassword').html('Contrasenas no coinciden').attr('class', 'text-danger');
+            }
+
+        });
+                        
+
+    </script>
+    }

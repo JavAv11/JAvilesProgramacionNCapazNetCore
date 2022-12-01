@@ -1,0 +1,40 @@
+﻿@model ML.Producto
+@{
+    ViewData["Title"] = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Compra de Productos</h1>
+
+
+
+<div class="container">
+
+    <div class="row">
+        @foreach (ML.Producto producto in Model.Productos)
+        {
+            <div class="col mt-3 pt-3">
+                <div class="card text-white bg-black border-primary mb-3 border-2" style="width: 18rem;">
+                    @if (producto.Imagen != null)
+                    {
+                        <img src="data:image/jpeg;base64, @producto.Imagen" style="height:50%; width:100%;" />
+                    }
+                    else
+                    {
+                        <img id="Img" src="~/SinFotoProducto.png" style="width:100% ; height:50%" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title card-header text-center bg-secondary" id="pNombre">@producto.Nombre</h5>
+                        <p class="card-text" id="pPrecioUnitario">Precio Unitario: @producto.PrecioUnitario</p>
+                        <p class="card-text" id="pStock">Stock: @producto.Stock</p>
+                        <p class="card-text" id="pDescripcion">Descripcion: @producto.Descripcion</p>
+
+                        <a href="../Views/ProductoCompra/Carrito.cshtml" class="btn btn-success">Anadir a carrito</a>
+                        @Html.ActionLink("Agregar", "Carrito", "ProductoCompra", htmlAttributes: new { @class = "btn btn-success" })
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>

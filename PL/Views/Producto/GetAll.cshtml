@@ -1,0 +1,126 @@
+﻿@model ML.Producto
+
+@{
+    ViewBag.Title = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Productos</h2>
+
+<div class="container">
+
+
+    <div class="row">
+        <div style="float:right">
+            @Html.ActionLink("Agregar", "Form", "Producto", htmlAttributes: new { @class = "btn btn-success" })
+        </div>
+    </div>
+
+    @using (Html.BeginForm("GetAll", "Producto", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row align-items-start">
+            <div class="col-md-3">
+                @Html.DropDownListFor(model => model.Proovedor.IdProovedor, new SelectList(Model.Proovedor.Proveedores, "IdProovedor", "Nombre"), "Selecciona una opción", new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", @placeholder = "Nombre Del Producto" })
+            </div>
+            <div class="col-md-3">
+                <input type="submit" value="Buscar" class="btn btn-success" />
+            </div>
+        </div>
+
+    }
+</div>
+
+
+<table class="table table-hover table-bordered table-responsive" id="tblProducto">
+    <thead>
+        <tr>
+            <th>Editar</th>
+            <th class="visually-hidden">IdProducto</th>
+            <th>Nombre</th>
+            <th>Precio Unitario</th>
+            <th>Stock</th>
+            <th class="visually-hidden">IdProovedor</th>
+            <th>Proovedor</th>
+            <th class="visually-hidden">IdDepartamento</th>
+            <th>Departamento</th>
+            <th class="visually-hidden">IdArea</th>
+            <th>Area</th>
+            <th>Descripcion</th>
+            <th>Imagen </th>
+            <th>Delete</th>
+
+
+        </tr>
+    </thead>
+
+    <tbody class="table table-dark table-hover table-bordered border-primary">
+        @foreach (ML.Producto producto in Model.Productos)
+        {
+            <tr>
+                <td class="text-center"><a class="btn btn-warning glyphicon glyphicon-edit" href="@Url.Action("Form", "Producto", new { IdProducto = producto.IdProducto})"><i class="bi bi-pencil-square"></i></a></td>
+                <td class="visually-hidden">@producto.IdProducto</td>
+                <td>@producto.Nombre</td>
+                <td>@producto.PrecioUnitario</td>
+                <td>@producto.Stock</td>
+
+                <td class="visually-hidden">@producto.Proovedor.IdProovedor</td>
+                <td>@producto.Proovedor.Nombre</td>
+
+                <td class="visually-hidden">@producto.Departamento.IdDepartamento</td>
+                <td>@producto.Departamento.Nombre</td>
+
+                <td class="visually-hidden"> @producto.Departamento.Area.IdArea</td>
+                <td>@producto.Departamento.Area.Nombre</td>
+
+                <td>@producto.Descripcion</td>
+
+                @if (producto.Imagen != null)
+                {
+                    <td><img src="data:image/jpeg;base64, @producto.Imagen" style="height:175px; width:200px;" /></td>
+
+                }
+                else
+                {
+                    <td><img id="Img" src="~/SinFotoProducto.png" style="width:175px ; height:150px" /></td>
+                }
+
+                <td class="text-center"><a class="btn btn-danger " href="@Url.Action("Delete", "Producto", new { IdProducto = producto.IdProducto })" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><i class="bi bi-trash-fill"></i></a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts
+    {
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.material.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tblProducto').DataTable({
+                searching: false,
+                "lengthMenu": [[5, 10, 15, 20, -1], [5, 10, 15, 20, "All"]],
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell',
+                    },
+                ],
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
+                },
+            });
+        });
+
+    </script>
+
+}

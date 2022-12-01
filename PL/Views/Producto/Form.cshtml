@@ -1,0 +1,188 @@
+﻿@model ML.Producto
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2>Form</h2>
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("Form", "Producto", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="row">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.IdProducto, new { @class = "hidden" })
+
+                        @Html.TextBoxFor(model => model.IdProducto, new { @class = "hidden form-control" })
+
+                        @Html.ValidationMessageFor(model => model.IdProducto)
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Nombre)
+
+                        @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", @id = "txtNombre", @placeholder = "Ejemplo: Mochila" , autocomplete = "off"})
+
+                        @Html.ValidationMessageFor(model => model.Nombre)
+
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.PrecioUnitario)
+
+                        @Html.TextBoxFor(model => model.PrecioUnitario, new { @class = "form-control" , @placeholder ="Ejemplo: 600" , autocomplete = "off"})
+
+                        @Html.ValidationMessageFor(model => model.PrecioUnitario)
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Stock)
+
+                        @Html.TextBoxFor(model => model.Stock, new { @class = "form-control" , @placeholder ="20" , autocomplete = "off"})
+
+                        @Html.ValidationMessageFor(model => model.Stock)
+
+                    </div>
+                </div>
+
+                <hr></hr>
+                <div class="divider py-1 bg-success"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Proovedor.IdProovedor)
+
+                        @*@Html.TextBoxFor(model => model.Proveedor.IdProovedor, new { @class = "form-control" })*@
+                        @Html.DropDownListFor(model => model.Proovedor.IdProovedor, new SelectList(Model.Proovedor.Proveedores, "IdProovedor", "Nombre"), "Selecciona una opción", new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.Proovedor.IdProovedor)
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model =>model.Departamento.Area.IdArea)
+
+                        @Html.DropDownListFor(model => model.Departamento.Area.IdArea, new SelectList(Model.Departamento.Area.Areas, "IdArea", "Nombre"), "Selecciona una opcion", new{id="ddlArea", @class = "form-control"})
+
+                        @Html.ValidationMessageFor(model => model.Departamento.Area.IdArea)
+                    </div>
+
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model =>model.Departamento.IdDepartamento)
+                        @if (Model.Departamento.Departamentos == null)
+                        {
+                            @Html.DropDownListFor(model =>model.Departamento.IdDepartamento, new SelectList(string.Empty, "Value", "Text"),"Seleciona un Departamento", htmlAttributes: new{id= "ddlDepartamento", @class="form-control"})
+                            @Html.ValidationMessageFor(model => model.Departamento.IdDepartamento)
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model =>model.Departamento.IdDepartamento, new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre"), "Selecciona un Departamento", htmlAttributes: new {id="ddlDepartamento", @class= "form-control"})
+                            @Html.ValidationMessageFor(model => model.Departamento.IdDepartamento)
+                        }
+
+
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(model => model.Descripcion)
+
+                        @Html.TextBoxFor(model => model.Descripcion, new { @class = "form-control", @placeholder ="Descripcion del producto" , autocomplete = "off"})
+
+                        @Html.ValidationMessageFor(model => model.Descripcion)
+
+
+                    </div>
+
+                    <div class=" col-md-3">
+
+                        @Html.LabelFor(model=> model.Imagen)
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-image"></i></span>
+                            <input id="IFImage" type='file' class="form-control" name="IFImage" onchange="validateFile(this), readURL(this);  " />
+                        </div>
+                    </div>
+
+                    <div class="row col-mb-3" >
+
+                        @if (Model.Imagen != null)
+                        {
+
+                            <img id="Img" src="data:image/*;base64,@Model.Imagen" style="width:250px ; height:250px" />
+
+                        }
+                        else
+                        {
+                            <img id="Img" src="~/SinFotoProducto.png" style="width:225px ; height:200px" />
+                        }
+
+
+                        @Html.HiddenFor(model => model.Imagen)
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+
+                    <div class="col-md-3">
+
+                        <input type="submit" value="Guardar" class="btn btn-success" />
+
+                        @Html.ActionLink("Regresar", "GetAll", "Producto", htmlAttributes: new { @class = "btn btn-danger" })
+
+                    </div>
+
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+@section Scripts{
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#ddlArea").change(function () {
+                $("#ddlDepartamento").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetDepartamento")',
+                    dataType: 'json',
+                    data: { IdArea: $("#ddlArea").val() },
+                    success: function (departamentos) {
+                        $("#ddlDepartamento").append('<option value="0">' + 'Seleccione una opción' + '</option>');
+                        $.each(departamentos, function (i, departamentos) {
+                            $("#ddlDepartamento").append('<option value="'
+                                + departamentos.idDepartamento + '">'
+                                + departamentos.nombre + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+                });
+            })
+        })
+    </script>
+}
