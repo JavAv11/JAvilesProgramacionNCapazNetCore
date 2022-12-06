@@ -2,21 +2,22 @@
 using Microsoft.AspNetCore.Mvc;
 using ML;
 using Newtonsoft.Json;
+using System.Drawing.Drawing2D;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace PL.Controllers
 {
     public class ProductoCompraController : Controller
     {
-        //private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
-        //private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _hostingEnvironment;
+        private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _hostingEnvironment;
 
-        //public ProductoCompraController(IConfiguration configuration, Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment)
-        //{
-        //    _configuration = configuration;
-        //    _hostingEnvironment = hostingEnvironment;
-        //}
+        public ProductoCompraController(IConfiguration configuration, Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment)
+        {
+            _configuration = configuration;
+            _hostingEnvironment = hostingEnvironment;
+        }
 
 
         [HttpGet]
@@ -67,55 +68,81 @@ namespace PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Carrito(ML.Producto producto)
+        public IActionResult Carrito(int? IdProducto)
         {
+            ML.Result result = new ML.Result();
+           
 
-            ML.VentaProducto ventaProducto = new ML.VentaProducto();
+            if(IdProducto != 0)
+            {
+                if (HttpContext.Session.GetString("Carrito") == null)
+                {
+                    ML.VentaProducto ventaProducto = new ML.VentaProducto();
+
+                    ventaProducto.Producto = new ML.Producto();
+
+                    ventaProducto.Producto.IdProducto = IdProducto.Value;
+
+                    ventaProducto.Cantidad = 1;
+
+                    ML.Result resultProducto = BL.Producto.GetById(IdProducto.Value);
+
+                    result.Objects = new List<object>();
+                    if (resultProducto.Correct)
+                    {
+                        ventaProducto.Producto = (ML.Producto)resultProducto.Object;
+                        result.Objects.Add(ventaProducto);
+                    }
+                    HttpContext.Session.SetString("Carrito", Newtonsoft.Json.JsonConvert.SerializeObject(result.Objects)) ;
+                    result.Correct = true;
+                }
+                else
+                {
+                    result.Objects = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("Carrito"));
+
+                    bool Existe = false;
+                    var indice = 0;
+
+                    foreach (ML.VentaProducto ventaProducto in result.Objects)
+                    {
+                        if(ventaProducto.Producto.IdProducto == IdProducto)
+                        {
+                            Existe = true;
+                            indice = result.Objects.IndexOf(ventaProducto);
+
+                        }
+                    }
+                    if (Existe == true)
+                    {
+                        foreach(ML.VentaProducto ventaProducto in result.Objects)
+                        {
+                            ventaProducto.Cantidad = ventaProducto.Cantidad + 1;
+                        }
+                    }
+                    else
+                    {
+                        ML.VentaProducto ventaProducto = new ML.VentaProducto();
+                        ventaProducto.Producto = new ML.Producto();
+                        ventaProducto.Producto.IdProducto = IdProducto.Value;
+                        ventaProducto.Cantidad = 1;
+
+                        ML.Result resultProducto = BL.Producto.GetById(IdProducto.Value);
+                        result.Objects.Add(ventaProducto);
+                    }
+                }
+            }
+            return View("Carrito");
+
+            //ML.VentaProducto ventaProducto = new ML.VentaProducto();
+            //ventaProducto.ventaProductos = new List<object>();
             
-            ventaProducto.ventaProductos = new List<object>();
-
-            if (HttpContext.Session.GetString("Carrito") == null)
-            {
-                producto.Cantidad = producto.Cantidad = 1;
-                ventaProducto.ventaProductos.Add(producto);
-                HttpContext.Session.SetString("Carrito", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
-                var session = HttpContext.Session.GetString("Carrito");
-            }
-            else
-            {
-                var ventaSession = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("Carrito"));
-
-                foreach(var obj in ventaSession)
-                {
-                    ML.Producto objproducto = JsonConvert.DeserializeObject<ML.Producto>(obj.ToString());
-                    ventaProducto.ventaProductos.Add(objproducto);
-                }
-                foreach(ML.Producto venta in ventaProducto.ventaProductos.ToList())
-                {
-                    if(producto.IdProducto == venta.IdProducto)
-                    {
-                        venta.Cantidad = venta.Cantidad + 1;
-                    }
-                    else
-                    {
-                        producto.Cantidad = producto.Cantidad = 1;
-                        ventaProducto.ventaProductos.Add(producto);
-
-                    }
-                    HttpContext.Session.SetString("Carrito", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
-                    if (HttpContext.Session.GetString("Carrito") != null)
-                    {
-                        ViewBag.Message = "Se ha agregado el producto a tu carrito!";
-                        return PartialView("Modal");
-                    }
-                    else
-                    {
-                        ViewBag.Message = "No se pudo agregar tu producto ):";
-                        return PartialView("Modal");
-                    }
-                }
-            }
-            return View();
+            //if (HttpContext.Session.GetString("Carrito") == null)
+            //{
+            //    ventaProducto.Cantidad = ventaProducto.Cantidad = 1;
+            //    ventaProducto.ventaProductos.Add(IdProducto);
+            //    HttpContext.Session.SetString("Carrito", Newtonsoft.Json.JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+            //    var session = HttpContext.Session.GetString("Carrito");
+            //
         
         }
     }

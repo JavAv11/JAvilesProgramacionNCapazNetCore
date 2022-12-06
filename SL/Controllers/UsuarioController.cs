@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ML;
 
 namespace SL.Controllers
 {
-    //[Route("api/[Controller]")]
-    //[ApiController]
+    [Route("api/[Controller]")]
+    [ApiController]
     public class UsuarioController : Controller
     {
         
@@ -26,17 +27,21 @@ namespace SL.Controllers
             }
         }
 
+        // GETALL POST
         [HttpPost("GetAll")]
-        public IActionResult GetAll(string? nombre, string? ap, string? am)
+        public IActionResult GetAll(string? nombre, string? ApellidoPaterno, string? ApellidoMaterno)
         {
+
             ML.Usuario usuario = new ML.Usuario();
 
-            usuario.Nombre = (nombre==null)?"":nombre;
-            usuario.ApellidoPaterno = (ap==null)?"":ap;
-            usuario.ApellidoMaterno = (am==null)?"":am;
+            //alumno.Nombre = nombre;
+            usuario.Nombre = (nombre == null) ? "" : nombre;
+            usuario.ApellidoPaterno = (ApellidoPaterno == null) ? "" : ApellidoPaterno;
+            usuario.ApellidoMaterno = (ApellidoMaterno == null) ? "" : ApellidoMaterno;
 
             usuario.Rol = new ML.Rol();
             ML.Result result = BL.Usuario.GetAll(usuario);
+
             if (result.Correct)
             {
                 return Ok(result);
@@ -83,64 +88,39 @@ namespace SL.Controllers
             }
         }
 
-      
-        public ActionResult Create()
+        [HttpGet("Add")]
+        public ActionResult Add(ML.Usuario usuario)
         {
-            return View();
-        }
+            ML.Result result = new ML.Result();
 
-        // POST: UsuarioController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+
+            result = BL.Usuario.Add(usuario);
+            if (result.Correct)
             {
-                return RedirectToAction(nameof(Index));
+                return Ok(result);
             }
-            catch
+            else
             {
-                return View();
+                return NotFound();
             }
         }
 
-        // GET: UsuarioController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpGet("Update")]
+        public ActionResult Update(ML.Usuario usuario)
         {
-            return View();
-        }
+            ML.Result result = new ML.Result();
 
-        // POST: UsuarioController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
+            result = BL.Usuario.Update(usuario);
+            if (result.Correct)
             {
-                return RedirectToAction(nameof(Index));
+                return Ok(result);
             }
-            catch
+            else
             {
-                return View();
+                return NotFound();
             }
         }
 
-        // GET: UsuarioController/Delete/5
-        
 
-        // POST: UsuarioController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
