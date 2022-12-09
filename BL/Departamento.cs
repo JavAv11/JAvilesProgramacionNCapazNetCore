@@ -173,7 +173,7 @@ namespace BL
             {
                 using (DL.JavilesProgramacionNcapasContext context = new DL.JavilesProgramacionNcapasContext())
                 {
-                    var query = context.Database.ExecuteSqlRaw($"[DepartamentoUpdate] {departamento.IdDepartamento}, '{departamento.Nombre}', {departamento.Area.IdArea}");
+                    var query = context.Database.ExecuteSqlRaw($"DepartamentoUpdate {departamento.IdDepartamento}, '{departamento.Nombre}', {departamento.Area.IdArea}");
                     if (query > 0)
                     {
                         result.Correct = true;
@@ -213,7 +213,7 @@ namespace BL
 
                         result.Correct = true;
                     }
-                    result.Correct = true;
+                    //result.Correct = true;
                 }
             }
             catch (Exception ex)

@@ -71,8 +71,6 @@ namespace PL.Controllers
         public IActionResult Carrito(int? IdProducto)
         {
             ML.Result result = new ML.Result();
-           
-
             if(IdProducto != 0)
             {
                 if (HttpContext.Session.GetString("Carrito") == null)
@@ -127,15 +125,14 @@ namespace PL.Controllers
                         ventaProducto.Cantidad = 1;
 
                         ML.Result resultProducto = BL.Producto.GetById(IdProducto.Value);
-                        result.Objects.Add(ventaProducto);
+                        result.Objects.Add(resultProducto);
                     }
                 }
             }
-            return View("Carrito");
+            return View("Carrito", result);
 
             //ML.VentaProducto ventaProducto = new ML.VentaProducto();
-            //ventaProducto.ventaProductos = new List<object>();
-            
+            //ventaProducto.ventaProductos = new List<object>();          
             //if (HttpContext.Session.GetString("Carrito") == null)
             //{
             //    ventaProducto.Cantidad = ventaProducto.Cantidad = 1;

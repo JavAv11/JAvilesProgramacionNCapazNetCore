@@ -310,6 +310,38 @@ namespace PL.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult Login()
+        {
+
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Login(string UserName, string Password)
+        {
+            ML.Usuario usuario = new ML.Usuario();
+            ML.Result result = BL.Usuario.GetByUserName(UserName);
+            if (result.Correct)
+            {
+                usuario = (ML.Usuario)result.Object;
+                if(usuario.Password == Password)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ViewBag.Message = "El usuario o contraseña son incorrectos";
+                    return PartialView("ModalLogin");
+                }
+            }
+            else
+            {
+                ViewBag.Message = "El usuario o contraseña son incorrectos";
+                return PartialView("ModalLogin");
+            }
+           
+        }
+
 
         public JsonResult GetEstado(int IdPais)
         {

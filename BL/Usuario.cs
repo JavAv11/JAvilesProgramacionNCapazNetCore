@@ -215,6 +215,85 @@ namespace BL
             return result;
         }
 
+        public static ML.Result GetByUserName(string UserName)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.JavilesProgramacionNcapasContext context = new DL.JavilesProgramacionNcapasContext())
+                {
+                    var objUsuario = context.Usuarios.FromSqlRaw($"UsuarioGetByUserName {UserName}").AsEnumerable().FirstOrDefault();
+                    result.Objects = new List<object>();
+
+
+                    if (objUsuario != null)
+                    {
+                        ML.Usuario usuario = new ML.Usuario();
+
+                        usuario.IdUsuario = objUsuario.IdUsuario;
+                        usuario.Nombre = objUsuario.Nombre;
+                        usuario.ApellidoPaterno = objUsuario.ApellidoPaterno;
+                        usuario.ApellidoMaterno = objUsuario.ApellidoMaterno;
+                        usuario.FechaDeNacimiento = objUsuario.FechaDeNacimiento.ToString("dd-MM-yyyy");
+                        usuario.Sexo = objUsuario.Sexo;
+                        usuario.UserName = objUsuario.UserName;
+                        usuario.Email = objUsuario.Email;
+                        usuario.Password = objUsuario.Password;
+                        usuario.Telefono = objUsuario.Telefono;
+                        usuario.Celular = objUsuario.Celular;
+                        usuario.CURP = objUsuario.Curp;
+
+                        usuario.Rol = new ML.Rol();
+                        usuario.Rol.IdRol = objUsuario.IdRol.Value;
+                        usuario.Rol.Nombre = objUsuario.NombreRol;
+
+                        usuario.Imagen = objUsuario.Imagen;
+                        usuario.Status = objUsuario.Status.Value;
+
+
+                        //Direccion
+                        usuario.Direccion = new ML.Direccion();
+                        usuario.Direccion.IdDireccion = objUsuario.IdDireccion;
+                        usuario.Direccion.Calle = objUsuario.Calle;
+                        usuario.Direccion.NumeroInterior = objUsuario.NumeroInterior;
+                        usuario.Direccion.NumeroExterior = objUsuario.NumeroExterior;
+
+                        //////Colonia
+                        usuario.Direccion.Colonia = new ML.Colonia();
+                        usuario.Direccion.Colonia.IdColonia = objUsuario.IdColonia;
+                        usuario.Direccion.Colonia.Nombre = objUsuario.NombreColonia;
+                        usuario.Direccion.Colonia.CP = objUsuario.CodigoPostal;
+
+                        ////Municipio
+
+                        usuario.Direccion.Colonia.Municipio = new ML.Municipio();
+                        usuario.Direccion.Colonia.Municipio.IdMunicipio = objUsuario.IdMunicipio;
+                        usuario.Direccion.Colonia.Municipio.Nombre = objUsuario.NombreMunicipio;
+
+                        ////Estado
+                        usuario.Direccion.Colonia.Municipio.Estado = new ML.Estado();
+                        usuario.Direccion.Colonia.Municipio.Estado.IdEstado = objUsuario.IdEstado;
+                        usuario.Direccion.Colonia.Municipio.Estado.Nombre = objUsuario.NombreEstado;
+
+                        ////Pais
+                        usuario.Direccion.Colonia.Municipio.Estado.Pais = new ML.Pais();
+                        usuario.Direccion.Colonia.Municipio.Estado.Pais.IdPais = objUsuario.IdPais;
+                        usuario.Direccion.Colonia.Municipio.Estado.Pais.Nombre = objUsuario.NombrePais;
+
+                        result.Object = usuario;
+                        result.Correct = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+                result.Ex = ex;
+            }
+            return result;
+        }
+
         public static ML.Result Update(ML.Usuario usuario)
         {
             ML.Result result = new ML.Result();
