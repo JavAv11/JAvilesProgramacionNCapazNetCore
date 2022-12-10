@@ -123,9 +123,11 @@ namespace SL.Controllers
 
         [HttpGet("Login/{UserName}")]
 
-        public ActionResult Login (string UserName)
+        public IActionResult GetByIdUserName(string userName)
         {
-            ML.Result result = BL.Usuario.GetByUserName(UserName);
+            ML.Usuario usuario = new ML.Usuario();
+            usuario.Rol = new ML.Rol();
+            ML.Result result = BL.Usuario.GetByUserName(userName);
 
             if (result.Correct)
             {

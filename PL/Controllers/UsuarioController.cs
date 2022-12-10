@@ -317,29 +317,64 @@ namespace PL.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Login(string UserName, string Password)
+        public ActionResult Login(string userName, string password)
         {
-            ML.Usuario usuario = new ML.Usuario();
-            ML.Result result = BL.Usuario.GetByUserName(UserName);
+            //ML.Result result = BL.Usuario.GetByIdUserName(userName);
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    string urlAPI = _configuration["UrlAPI"];
+                    httpClient.BaseAddress = new Uri(urlAPI);
+
+                    var request = httpClient.GetAsync($"Usuario/Login/{userName}");
+                    request.Wait();
+
+                    var response = request.Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var readContent = response.Content.ReadAsStringAsync().Result;
+
+                        ML.Result resultAPI = JsonConvert.DeserializeObject<ML.Result>(readContent);
+
+                        result.ErrorMessage = resultAPI.ErrorMessage;
+
+                        if (resultAPI.Correct)
+                        {
+                            ML.Usuario user = JsonConvert.DeserializeObject<ML.Usuario>(resultAPI.Object.ToString());
+                            result.Object = user;
+                            result.Correct = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                result.Correct = false;
+                result.ErrorMessage = error.Message;
+            }
             if (result.Correct)
             {
-                usuario = (ML.Usuario)result.Object;
-                if(usuario.Password == Password)
+                ML.Usuario usuario = (ML.Usuario)result.Object;
+                if (usuario.Password == password)
                 {
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    ViewBag.Message = "El usuario o contraseña son incorrectos";
-                    return PartialView("ModalLogin");
+                    ViewBag.Message = "Contraseña o UserName incorrecto ";
+                    return PartialView("Modal");
                 }
             }
             else
             {
-                ViewBag.Message = "El usuario o contraseña son incorrectos";
-                return PartialView("ModalLogin");
+                ViewBag.Message = "Error: " + result.ErrorMessage;
+                return PartialView("Modal");
             }
-           
         }
 
 
