@@ -223,7 +223,6 @@ namespace BL
                 result.Ex = ex;
             }
             return result;
-
         }
     }
 }
