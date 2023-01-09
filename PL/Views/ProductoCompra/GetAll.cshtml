@@ -28,7 +28,7 @@
                         <p class="card-text" id="pPrecioUnitario">Precio Unitario: @producto.PrecioUnitario</p>
                         <p class="card-text" id="pStock">Stock: @producto.Stock</p>
                         <p class="card-text" id="pDescripcion">Descripcion: @producto.Descripcion</p>
-                        @Html.ActionLink("Agregar al Carrito","Carrito", "ProductoCompra" , new { IdProducto=producto.IdProducto} , htmlAttributes: new { @class = "btn btn-success" })"
+                        @Html.Actio("Agregar al Carrito", "ProductoCompra" , new { IdProducto=producto.IdProducto} , htmlAttributes: new { @class = "btn btn-success" })"
                     
                     </div>
 

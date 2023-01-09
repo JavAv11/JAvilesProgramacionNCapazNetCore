@@ -34,113 +34,208 @@ namespace PL.Controllers
             {
                 producto.Proovedor.Proveedores = resultProovedor.Objects;
                 producto.Productos = result.Objects;
-
-                return View(producto);
             }
             else
             {
                 ViewBag.Message = "Ocurrio un error";
-                return View();
             }
+            return View(producto);
         }
         [HttpPost]
-        public ActionResult GetAll(ML.Producto producto)
+        public ActionResult AnadirCarrito(int? IdProducto)
         {
-            producto.Proovedor = new ML.Proovedor();
+            ML.VentaProducto ventaProducto = new VentaProducto();
+            ventaProducto.ventaProductos = new List<object>();
 
-            producto.Nombre = (producto.Nombre == null) ? "" : producto.Nombre;
-            //producto.Proovedor = producto.Proovedor == null ? "" : producto.Proovedor;
+            bool productoAdd = false;
 
-            ML.Result resultProovedor = BL.Proovedor.GetAll();
-            ML.Result result = BL.Producto.GetAll(producto);
-            if (result.Correct)
+            if (HttpContext.Session.GetString("ProductoCompra") == null)
             {
-                producto.Proovedor.Proveedores = resultProovedor.Objects;
-                producto.Productos = result.Objects;
+                ventaProducto.Producto = new ML.Producto();
+                ventaProducto.Producto.IdProducto = IdProducto.Value;
+                ventaProducto.Cantidad = 1;
 
-                return View(producto);
+                ML.Result resultProducto = BL.Producto.GetById(IdProducto.Value);
+                ventaProducto.Producto = (ML.Producto)resultProducto.Object;
+
+                ventaProducto.ventaProductos.Add(ventaProducto);
+                HttpContext.Session.SetString("ProductoCompra", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+
+                ViewBag.Message = "Se Añadio al carrito";
+                return PartialView("Modal");
             }
             else
             {
-                ViewBag.Message = "Ocurrio un error";
-                return View();
-            }
-        }
-
-        [HttpGet]
-        public IActionResult Carrito(int? IdProducto)
-        {
-            ML.Result result = new ML.Result();
-            if(IdProducto != 0)
-            {
-                if (HttpContext.Session.GetString("Carrito") == null)
+                var carritoProductos = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("ProductoCompra"));
+                if (carritoProductos != null)
                 {
-                    ML.VentaProducto ventaProducto = new ML.VentaProducto();
+                    bool existe = false;
 
-                    ventaProducto.Producto = new ML.Producto();
-
-                    ventaProducto.Producto.IdProducto = IdProducto.Value;
-
-                    ventaProducto.Cantidad = 1;
-
-                    ML.Result resultProducto = BL.Producto.GetById(IdProducto.Value);
-
-                    result.Objects = new List<object>();
-                    if (resultProducto.Correct)
+                    foreach(var producto in carritoProductos)
                     {
-                        ventaProducto.Producto = (ML.Producto)resultProducto.Object;
-                        result.Objects.Add(ventaProducto);
+                        ML.VentaProducto ventaProductoObj = JsonConvert.DeserializeObject<ML.VentaProducto>(producto.ToString());
+                        ventaProducto.ventaProductos.Add(ventaProductoObj);
+
                     }
-                    HttpContext.Session.SetString("Carrito", Newtonsoft.Json.JsonConvert.SerializeObject(result.Objects)) ;
-                    result.Correct = true;
-                }
-                else
-                {
-                    result.Objects = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("Carrito"));
-
-                    bool Existe = false;
-                    var indice = 0;
-
-                    foreach (ML.VentaProducto ventaProducto in result.Objects)
+                    foreach(ML.VentaProducto validate in ventaProducto.ventaProductos)
                     {
-                        if(ventaProducto.Producto.IdProducto == IdProducto)
+                        if (ventaProducto.Producto.IdProducto == IdProducto.Value)
                         {
-                            Existe = true;
-                            indice = result.Objects.IndexOf(ventaProducto);
-
+                            existe = true;
+                            validate.Cantidad++;
                         }
                     }
-                    if (Existe == true)
+
+                    if (!existe)
                     {
-                        foreach(ML.VentaProducto ventaProducto in result.Objects)
-                        {
-                            ventaProducto.Cantidad = ventaProducto.Cantidad + 1;
-                        }
-                    }
-                    else
-                    {
-                        ML.VentaProducto ventaProducto = new ML.VentaProducto();
                         ventaProducto.Producto = new ML.Producto();
                         ventaProducto.Producto.IdProducto = IdProducto.Value;
                         ventaProducto.Cantidad = 1;
 
                         ML.Result resultProducto = BL.Producto.GetById(IdProducto.Value);
-                        result.Objects.Add(resultProducto);
+                        ventaProducto.Producto = (ML.Producto)resultProducto.Object;
+                        ventaProducto.ventaProductos.Add(ventaProducto);
+
+                        HttpContext.Session.SetString("ProductoCompra", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+                        productoAdd = true;
+                        ViewBag.Message = "Se ha Agregado una cantidad del producto";
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("ProductoCompra", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+                        productoAdd = true;
+                        ViewBag.Message = "Se añadio una cantidad extra de tu este producto";
                     }
                 }
+                return PartialView("Modal");
             }
-            return View("Carrito", result);
+        }
 
-            //ML.VentaProducto ventaProducto = new ML.VentaProducto();
-            //ventaProducto.ventaProductos = new List<object>();          
-            //if (HttpContext.Session.GetString("Carrito") == null)
-            //{
-            //    ventaProducto.Cantidad = ventaProducto.Cantidad = 1;
-            //    ventaProducto.ventaProductos.Add(IdProducto);
-            //    HttpContext.Session.SetString("Carrito", Newtonsoft.Json.JsonConvert.SerializeObject(ventaProducto.ventaProductos));
-            //    var session = HttpContext.Session.GetString("Carrito");
-            //
-        
+        [HttpGet]
+        public IActionResult Carrito(ML.VentaProducto ventaProducto)
+        {
+            if (HttpContext.Session.GetString("ProductoCompra") == null)
+            {
+                ViewBag.Message = "No tiene productos en el carrito";
+
+                return View("Modal");
+            }
+            else
+            {
+                var ventaSession = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("ProductoCompra"));
+                ventaProducto.ventaProductos = new List<object>();
+
+                foreach (var obj in ventaSession)
+                {
+                    ML.VentaProducto ventaProductoObj = JsonConvert.DeserializeObject<ML.VentaProducto>(obj.ToString());
+                    ventaProducto.ventaProductos.Add(ventaProductoObj);
+                }
+            }
+
+            return View(ventaProducto);
+
+        }
+
+        public IActionResult Desagregar(int IdProducto)
+        {
+            ML.VentaProducto ventaProducto = new ML.VentaProducto();
+            ventaProducto.ventaProductos = new List<object>();
+
+            var carritoProdutos = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("VentaProducto"));
+            var indice = 0;
+
+            if (carritoProdutos != null)
+            {
+                bool esCero = false;
+
+                foreach (var producto in carritoProdutos)
+                {
+                    ML.VentaProducto ventaProductoObj = JsonConvert.DeserializeObject<ML.VentaProducto>(producto.ToString());
+                    ventaProducto.ventaProductos.Add(ventaProductoObj);
+                }
+
+                foreach (ML.VentaProducto verificaProducto in ventaProducto.ventaProductos)
+                {
+                    if (verificaProducto.Producto.IdProducto == IdProducto)
+                    {
+
+
+                        verificaProducto.Cantidad = verificaProducto.Cantidad - 1;
+
+
+                        if (verificaProducto.Cantidad == 0)
+                        {
+                            indice = ventaProducto.ventaProductos.IndexOf(verificaProducto);
+                            esCero = true;
+
+                        }
+                        else
+                        {
+                            HttpContext.Session.SetString("VentaProducto", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+                            ViewBag.Message = "Se ha eliminado una cantidad del producto";
+                            esCero = false;
+                        }
+
+
+                    }
+
+
+
+
+                }
+                if (esCero)
+                {
+                    ventaProducto.ventaProductos.RemoveAt(indice);
+                    HttpContext.Session.SetString("VentaProducto", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+                    ViewBag.Message = "Se ha eliminado el producto";
+                }
+
+            }
+
+            return PartialView("Modal");
+        }
+
+        public IActionResult Eliminar(int IdProducto)
+        {
+            ML.VentaProducto ventaProducto = new ML.VentaProducto();
+            ventaProducto.ventaProductos = new List<object>();
+            var carritoProdutos = JsonConvert.DeserializeObject<List<object>>(HttpContext.Session.GetString("VentaProducto"));
+            var indice = 0;
+            if (carritoProdutos != null)
+            {
+                bool existe = false;
+
+                foreach (var producto in carritoProdutos)
+                {
+                    ML.VentaProducto ventaProductoObj = JsonConvert.DeserializeObject<ML.VentaProducto>(producto.ToString());
+                    ventaProducto.ventaProductos.Add(ventaProductoObj);
+                }
+
+                foreach (ML.VentaProducto verificaProducto in ventaProducto.ventaProductos)
+                {
+                    if (verificaProducto.Producto.IdProducto == IdProducto)
+                    {
+                        
+                        indice = ventaProducto.ventaProductos.IndexOf(verificaProducto);
+                        existe = true;
+                    
+                    }
+
+
+                }
+
+                if (existe)
+                {
+                    ventaProducto.ventaProductos.RemoveAt(indice);
+                    HttpContext.Session.SetString("VentaProducto", JsonConvert.SerializeObject(ventaProducto.ventaProductos));
+                    ViewBag.Message = "Se ha eliminado una cantidad del producto";
+                }
+
+
+
+            }
+
+            return PartialView("Modal");
         }
     }
 }
